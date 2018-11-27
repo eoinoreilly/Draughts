@@ -1,0 +1,57 @@
+class draughts{
+	main_method{
+		board
+		player1
+		player2
+
+		while (!game_over){
+			if (move_count % 2 == 0){
+				play_game(board, player1, player2)
+			}
+			
+			else{
+				play_game(board, player2, player1)
+			}
+			
+			move_count++
+
+			if(piece_count1 == 0){
+				winner = player2
+				game_over = true
+			}
+			
+			else if (piece_count2 == 0){
+				winner = player1
+				game_over = true
+			}
+		}
+
+		print ("The winner is ", winner.name)
+	}
+
+	play_game(board, player, opposition){
+		movable_pieces = player.pieces.in_play
+		
+		selected_piece = piece.selected_piece
+		
+		if(selected_piece.crowned){
+			# Finds available spaces and highlights them to the player
+		}
+		
+		else{
+			# Finds available spaces and highlights them to the player
+		}
+		
+		selected_piece.move_to(selected_coord)
+		
+		if # where I gave up
+	}
+}
+
+class board{
+	# Creates a 2D array of coordinates for board pieces to be placed on
+}
+
+class player{
+	# Creates a Player object, with a list of pieces, which consist of 2 Booleans (in_play and crowned) and a coordinate)
+}
