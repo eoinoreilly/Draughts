@@ -1,5 +1,5 @@
 from PyQt5.QtCore import Qt, QBasicTimer, pyqtSignal, QPoint
-from PyQt5.QtGui import QPainter
+from PyQt5.QtGui import QPainter, QColor
 from PyQt5.QtWidgets import QFrame, QLabel
 from piece import Piece
 from player import Player
@@ -21,13 +21,12 @@ class Board(QFrame):
         self.timer = QBasicTimer()
         self.isWaitingAfterLine = False
 
-        # self.setFocusPolicy(Qt.StrongFocus)
+        self.setFocusPolicy(Qt.StrongFocus)
         self.isStarted = False
         self.isPaused = False
         self.clear_board()
 
         self.currentPlayer = Player.Player1
-        self.currentPlayer = 1
 
         self.boardArray = [
             [0, 1, 0, 1, 0, 1, 0, 1],
@@ -47,6 +46,7 @@ class Board(QFrame):
         print('\n'.join(['\t'.join([str(cell) for cell in row]) for row in self.boardArray]))
 
     def mouse_pos_to_col_row(self, event):
+        # convert the mouse click event to a row and column
         x_mouse_event = event.x()
         y_mouse_event = event.y()
         square_height = self.square_height()
@@ -96,11 +96,35 @@ class Board(QFrame):
     def paintEvent(self, event):
         # paints the board and the pieces of the game
         painter = QPainter(self)
-        rect = self.contentRect()
-        self.drawBoardSquares(painter)
-        self.drawPieces(painter)
+        # rect = self.contentRect()
+        self.draw_grid(painter)
+        self.draw_pieces(painter)
 
     def mousePressEvent(self, event):
+        '''
+        retruns a QPoint with a tuple (x, y) col, row
+
+        call a "game logic" function to determine:
+
+        if 1st click:  #select piece
+            if isEmpty or opponent piece:
+                break
+            selectPiece()
+            highlightMoveOptions() #show permitted spaces to move to
+                if noOptions:
+                    break
+        if 2nd click: # select square to put piece selected in 1st click
+            if isNotEmpty:
+                break
+            movePiece()
+            removeCapturedPiece()
+            if pieceRemoved():
+                removeCapturedPiece()
+                updateScoreBoard()
+                didIWin()
+
+
+        '''
         print("click location [", event.x(), ",", event.y(), "]")
         self.mouse_pos_to_col_row(event)
 
@@ -153,11 +177,11 @@ class Board(QFrame):
         '''clears pieces from the board'''
         # todo write code to reset game
 
-    def try_move(self, newX, newY):
+    def try_move(self, new_x, new_y):
         '''tries to move a piece'''
 
     def draw_grid(self, painter):
-        # draw all the square on the board
+        # draw all the squares on the board
         # todo set the default colour of the brush
         for row in range(0, Board.boardHeight):
             for col in range(0, Board.boardWidth):
@@ -168,23 +192,27 @@ class Board(QFrame):
                 painter.save()
                 painter.translate(col * self.square_width(), row * self.square_height())
                 painter.setBrush(colour)
-                painter.fillRect(0, 0, )
+                painter.fillRect(0, 0, self.square_width(), self.square_height(), colour)
                 painter.restore()
 
-    def drawPieces(self, painter):
+    def draw_pieces(self, painter):
         # draw the prices on the board
-        colour = Qt.transparent
         for row in range(0, len(self.boardArray)):
             for col in range(0, len(self.boardArray[0])):
-                painter.save()
-                painter.translate(row, col)
-                if colorAsInt == 1:
-                    colour = Qt.red
-                elif colorAsInt == 2:
-                    colour = Qt.blue
-                painter.setbrush(colour)
-                if colorAsInt > 0:
-                    radius = (self.square_width() - 2) / 2
-                    center = QPoint(radius, radius)
-                    painter.drawEllipse(center, radius, radius)
                 painter.restore()
+                painter.save()
+                painter.translate(col * self.square_width(), row * self.square_height())
+                if self.boardArray[row][col] == 1:
+                    print("BLUE")
+                    colour = Qt.blue
+                elif self.boardArray[row][col] == 2:
+                    print("RED")
+                    colour = Qt.red
+                else:
+                    continue
+                painter.setBrush(colour)
+                if self.boardArray[row][col] > 0:
+                    radius_x = self.square_height() / 2
+                    radius_y = self.square_width() / 2
+                    center = QPoint(radius_y, radius_x)
+                    painter.drawEllipse(center, radius_y, radius_x)

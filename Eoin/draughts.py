@@ -10,12 +10,19 @@ class Draughts(QMainWindow):
 
     def __init__(self):
         super().__init__()
+        # stylesheet = \
+        #     ".QWidget {\n" \
+        #     + "border: 20px solid black;\n" \
+        #     + "border-radius: 4px;\n" \
+        #     + "background-color: rgb(255, 255, 255);\n" \
+        #     + "}"
 
         self.init_ui()
 
     def init_ui(self):
         # initiates application UI
         self.tboard = Board(self)
+        # self.tboard.setStyleSheet(stylesheet)
         self.setCentralWidget(self.tboard)
         # dock
         self.scoreBoard = ScoreBoard()
@@ -31,6 +38,7 @@ class Draughts(QMainWindow):
         self.tboard.start()
         
         self.resize(800, 800)
+        # self.setFixedSize(self.size())
         self.center()
         self.setWindowTitle('DraughtsV3')
         self.show()
