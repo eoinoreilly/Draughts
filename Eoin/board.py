@@ -47,12 +47,9 @@ class Board(QFrame):
 
     def mouse_pos_to_col_row(self, event):
         # convert the mouse click event to a row and column
-        x_mouse_event = event.x()
-        y_mouse_event = event.y()
-        square_height = self.square_height()
-        square_width = self.square_width()
-        row = int(y_mouse_event / square_height)
-        col = int(x_mouse_event / square_width)
+        self.click_row = int(event.y() / self.square_width())
+        self.click_col = int(event.x() / self.square_width())
+        print(self.boardArray[self.click_row][self.click_col])
 
     def square_width(self):
         # returns the width of one square in the board
@@ -101,8 +98,12 @@ class Board(QFrame):
         self.draw_pieces(painter)
 
     def mousePressEvent(self, event):
+        self.mouse_pos_to_col_row(event)
+        
+        # if event.button() == Qt.LeftButton:
+        
         '''
-        retruns a QPoint with a tuple (x, y) col, row
+        returns a QPoint with a tuple (x, y) col, row
 
         call a "game logic" function to determine:
 
@@ -122,11 +123,22 @@ class Board(QFrame):
                 removeCapturedPiece()
                 updateScoreBoard()
                 didIWin()
-
-
         '''
-        print("click location [", event.x(), ",", event.y(), "]")
-        self.mouse_pos_to_col_row(event)
+
+    # def getPieces(col, row):
+        # if (col < 1 || col > 7 || row < 1 || row > 7):
+            # return false
+        # else:
+            # return self.boardArray[col][row]
+
+    # def possibleMoves(col, row):
+        # if current_player == 1:
+            # if getPieces(col + 1, row + 1) == 0:
+                # self.move_list.add(Qpoint(col + 1, row + 1))
+            # if getPieces(col - 1, row + 1) == 0:
+                # self.move_list.add(Qpoint(col - 1, row + 1))
+        # elif current_player == 2:
+            
 
     def keyPressEvent(self, event):
         # processes key press events if you would like to do any
@@ -166,7 +178,7 @@ class Board(QFrame):
 
     def timerEvent(self, event):
         # handles timer event
-        # todo adapter this code to handle your timers
+        # todo adapt this code to handle your timers
 
         if event.timerId() == self.timer.timerId():
             pass
