@@ -7,10 +7,14 @@ from player import Player
 
 class Board(QFrame):
     msg2StatusBar = pyqtSignal(str)
+    updateTimerSignal = pyqtSignal(int) # signal sent when timer is updated
+    clickLocationSignal = pyqtSignal(str) # signal sent when there is a new click location
 
     boardWidth = 8
     boardHeight = 8
     Speed = 300
+    timerSpeed  = 1000  # the timer updates ever 1 second
+    counter     = 10    # the number the counter will count down from
 
     def __init__(self, parent):
         super().__init__(parent)
@@ -25,6 +29,7 @@ class Board(QFrame):
         self.isStarted = False
         self.isPaused = False
         self.clear_board()
+        self.start()                # start the game which will start the timer
 
         self.currentPlayer = Player.Player1
 
@@ -47,9 +52,11 @@ class Board(QFrame):
 
     def mouse_pos_to_col_row(self, event):
         # convert the mouse click event to a row and column
-        self.click_row = int(event.y() / self.square_width())
+        self.click_row = int(event.y() / self.square_height())
         self.click_col = int(event.x() / self.square_width())
         print(self.boardArray[self.click_row][self.click_col])
+        clickLoc = "click location: " + str(self.boardArray[self.click_row][self.click_col])
+        self.clickLocationSignal.emit(clickLoc)
 
     def square_width(self):
         # returns the width of one square in the board
@@ -72,6 +79,7 @@ class Board(QFrame):
         self.msg2StatusBar.emit(str("status message"))
 
         self.timer.start(Board.Speed, self)
+        print("start () - timer is started")
 
     def pause(self):
         # pauses game
@@ -89,6 +97,17 @@ class Board(QFrame):
             self.timer.start(Board.Speed, self)
             self.msg2StatusBar.emit(str("status message"))
         self.update()
+
+    def timerEvent(self, event):
+        '''this event is automatically called when the timer is updated. based on the timerSpeed variable '''
+        # todo adapter this code to handle your timers
+        if event.timerId() == self.timer.timerId():  # if the timer that has 'ticked' is the one in this class
+            if Board.counter == 0:
+                print("Game over")
+            Board.counter = Board.counter - 1
+            self.updateTimerSignal.emit(Board.counter)
+        else:
+            super(Board, self).timerEvent(event)  # other wise pass it to the super class for handling
 
     def paintEvent(self, event):
         # paints the board and the pieces of the game
@@ -175,15 +194,6 @@ class Board(QFrame):
 
         else:
             super(Board, self).keyPressEvent(event)
-
-    def timerEvent(self, event):
-        # handles timer event
-        # todo adapt this code to handle your timers
-
-        if event.timerId() == self.timer.timerId():
-            pass
-        else:
-            super(Board, self).timerEvent(event)
 
     def clear_board(self):
         '''clears pieces from the board'''
