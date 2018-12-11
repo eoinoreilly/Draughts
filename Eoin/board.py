@@ -54,7 +54,8 @@ class Board(QFrame):
         # convert the mouse click event to a row and column
         self.click_row = int(event.y() / self.square_height())
         self.click_col = int(event.x() / self.square_width())
-        print(self.boardArray[self.click_row][self.click_col])
+        # print(self.boardArray[self.click_row][self.click_col])
+        print(int(event.x()), ", ", int(event.y()))
         clickLoc = "click location: " + str(self.boardArray[self.click_row][self.click_col])
         self.clickLocationSignal.emit(clickLoc)
 
