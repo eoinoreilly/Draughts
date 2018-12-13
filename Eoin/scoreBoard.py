@@ -16,6 +16,7 @@ class ScoreBoard(QDockWidget):
         self.center()
         self.setWindowTitle('ScoreBoard')
         self.widget = QWidget(self)
+        self.widget.setMinimumSize(150,150) # Set minimum width to prevent text overflow
         self.main_layout = QVBoxLayout()
         self.label_player1 = QLabel("Player1")
         self.label_player2 = QLabel("Player2")
@@ -52,8 +53,12 @@ class ScoreBoard(QDockWidget):
 
     @pyqtSlot(int)
     def setTimeRemaining(self, timeRemainng):
-        '''updates the time remaining label to show the time remaining'''
-        update = "Time Remaining:" + str(timeRemainng)
+        '''updates the time remaining label to show the time remaining
+
+        Keep the changing value on a new line so as not to keep altering the
+        width of the QDockWidget
+        '''
+        update = "Time Remaining:\n" + str(timeRemainng)
         self.label_timeRemaining.setText(update)
         # self.redraw()
 

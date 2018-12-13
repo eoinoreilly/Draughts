@@ -119,9 +119,9 @@ class Board(QFrame):
 
     def mousePressEvent(self, event):
         self.mouse_pos_to_col_row(event)
-        
+
         # if event.button() == Qt.LeftButton:
-        
+
         '''
         returns a QPoint with a tuple (x, y) col, row
 
@@ -158,7 +158,7 @@ class Board(QFrame):
             # if getPieces(col - 1, row + 1) == 0:
                 # self.move_list.add(Qpoint(col - 1, row + 1))
         # elif current_player == 2:
-            
+
 
     def keyPressEvent(self, event):
         # processes key press events if you would like to do any

@@ -34,16 +34,16 @@ class Draughts(QMainWindow):
         self.scoreBoard = ScoreBoard()
         self.scoreBoard.setAllowedAreas(Qt.RightDockWidgetArea | Qt.LeftDockWidgetArea)
         self.addDockWidget(Qt.RightDockWidgetArea, self.scoreBoard)
-        
+
         self.toolbar = self.addToolBar("MainToolBar")
         self.toolbar.addWidget(QLabel("Some widget"))
-        
+
         self.statusbar = self.statusBar()
         self.tboard.msg2StatusBar[str].connect(self.statusbar.showMessage)
         self.scoreBoard.make_connection(self.tboard)
-        
+
         self.tboard.start()
-        
+
         self.resize(700, 700)
         # self.setFixedSize(self.size())
         self.center()
