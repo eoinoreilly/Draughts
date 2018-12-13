@@ -14,7 +14,8 @@ class Board(QFrame):
     boardHeight = 8
     Speed = 300
     timerSpeed  = 1000  # the timer updates ever 1 second
-    counter     = 10    # the number the counter will count down from
+    counter = 10  # the number the counter will count down from
+
 
     def __init__(self, parent):
         super().__init__(parent)
@@ -30,6 +31,8 @@ class Board(QFrame):
         self.isPaused = False
         self.clear_board()
         self.start()                # start the game which will start the timer
+        self.clicks = 0
+        self.current_piece, self.current_pos, self.new_piece, self.new_pos = (), (), (), ()
 
         self.currentPlayer = Player.Player1
 
@@ -56,8 +59,12 @@ class Board(QFrame):
         self.click_col = int(event.x() / self.square_width())
         # print(self.boardArray[self.click_row][self.click_col])
         print(int(event.x()), ", ", int(event.y()))
-        clickLoc = "click location: " + str(self.boardArray[self.click_row][self.click_col])
-        self.clickLocationSignal.emit(clickLoc)
+        # clickLoc = "click location: " + str(self.boardArray[self.click_row][self.click_col])
+        # self.clickLocationSignal.emit(clickLoc)
+        piece = self.boardArray[self.click_row][self.click_col]
+        square = (self.click_row, self.click_col)
+        print(piece, square)
+        return piece, square
 
     def square_width(self):
         # returns the width of one square in the board
@@ -118,7 +125,21 @@ class Board(QFrame):
         self.draw_pieces(painter)
 
     def mousePressEvent(self, event):
-        self.mouse_pos_to_col_row(event)
+        if self.clicks == 0:
+            self.clicks += 1
+            print("1st click")
+            self.current_piece, self.current_pos = self.mouse_pos_to_col_row(event)
+        elif self.clicks == 1:
+            self.clicks += 1
+            print("2nd click")
+            self.new_piece, self.new_pos = self.mouse_pos_to_col_row(event)
+            self.boardArray[self.new_pos[0]][self.new_pos[1]] = self.boardArray[self.current_pos[0]][self.current_pos[1]]
+            self.boardArray[self.current_pos[0]][self.current_pos[1]] = 0
+        print(self.clicks)
+        self.update()
+        print("update?")
+        # self.clicks = 0
+
 
         # if event.button() == Qt.LeftButton:
 
