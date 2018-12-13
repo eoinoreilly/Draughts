@@ -44,7 +44,7 @@ class Draughts(QMainWindow):
 
         self.tboard.start()
 
-        self.resize(700, 700)
+        self.resize(800, 800)
         # self.setFixedSize(self.size())
         self.center()
         self.setWindowTitle('DraughtsV3')
