@@ -1,6 +1,6 @@
 from PyQt5.QtCore import Qt, QBasicTimer, pyqtSignal, QPoint
 from PyQt5.QtGui import QPainter, QColor
-from PyQt5.QtWidgets import QFrame, QLabel
+from PyQt5.QtWidgets import QFrame, QLabel, QMessageBox
 from piece import Piece
 from player import Player
 
@@ -15,7 +15,6 @@ class Board(QFrame):
     Speed = 300
     timerSpeed  = 1000  # the timer updates ever 1 second
     counter = 10  # the number the counter will count down from
-
 
     def __init__(self, parent):
         super().__init__(parent)
@@ -32,9 +31,12 @@ class Board(QFrame):
         self.clear_board()
         self.start()                # start the game which will start the timer
         self.clicks = 0
-        self.current_piece, self.current_pos, self.new_piece, self.new_pos = (), (), (), ()
+        self.selectedPiece, self.fromRow, self.fromCol = 0, 0, 0
 
-        self.currentPlayer = Player.Player1
+
+        self.currentPlayer = ''
+        self.turn = 0
+        self.peiceSelected = False
 
         self.boardArray = [
             [0, 1, 0, 1, 0, 1, 0, 1],
@@ -46,7 +48,10 @@ class Board(QFrame):
             [0, 2, 0, 2, 0, 2, 0, 2],
             [2, 0, 2, 0, 2, 0, 2, 0],
         ]
-        self.print_board_array()
+        # self.print_board_array()
+
+    def playerTurn(self):
+        return self.turn % 2
 
     def print_board_array(self):
         # prints the boardArray in an attractive way
@@ -57,14 +62,11 @@ class Board(QFrame):
         # convert the mouse click event to a row and column
         self.click_row = int(event.y() / self.square_height())
         self.click_col = int(event.x() / self.square_width())
+        return self.click_row, self.click_col
         # print(self.boardArray[self.click_row][self.click_col])
-        print(int(event.x()), ", ", int(event.y()))
+        # print(int(event.x()), ", ", int(event.y()))
         # clickLoc = "click location: " + str(self.boardArray[self.click_row][self.click_col])
         # self.clickLocationSignal.emit(clickLoc)
-        piece = self.boardArray[self.click_row][self.click_col]
-        square = (self.click_row, self.click_col)
-        print(piece, square)
-        return piece, square
 
     def square_width(self):
         # returns the width of one square in the board
@@ -125,21 +127,58 @@ class Board(QFrame):
         self.draw_pieces(painter)
 
     def mousePressEvent(self, event):
+        row, col = self.mouse_pos_to_col_row(event)
+        square = (row, col)
+
+        # Set expected player and expected player piece
+        '''
+        Try to code highlight of active player on scoreboard
+        '''
+        if self.playerTurn() == 0:  # We start with Player 1
+            self.currentPlayer = Player.Player1
+            playerPiece = Piece.Blue
+            print("PLayer 1")
+        else:
+            self.currentPlayer = Player.Player2
+            playerPiece = Piece.Red
+            print("PLayer 2")
+
+        # If player begins by selecting an empty square, create pop up
+        if self.clicks == 0 and self.getPieces(row, col) == 0:
+            print(self.clicks)
+            QMessageBox.about(self, "Error", "You must select a piece first")
+            return
+
+        # Ensure Player selects their own piece
+        if (self.peiceSelected == False
+            and ((self.currentPlayer.name == 'Player1' and self.boardArray[row][col] != 1)
+             or (self.currentPlayer.name == 'Player2' and self.boardArray[row][col] != 2))):
+            QMessageBox.about(self, "Error", "{} must select a {} piece".format(self.currentPlayer.name, playerPiece.name))
+            return
+
         if self.clicks == 0:
+            QMessageBox.about(self, "Player Timer", "{} Timer begins".format(self.currentPlayer.name))
             self.clicks += 1
             print("1st click")
-            self.current_piece, self.current_pos = self.mouse_pos_to_col_row(event)
+            # Store current location value before changing the colour to highlight
+            self.fromRow, self.fromCol = row, col
+            self.selectedPiece = self.boardArray[row][col]
+            self.boardArray[row][col] = 3
+            self.peiceSelected = True
         elif self.clicks == 1:
             self.clicks += 1
             print("2nd click")
-            self.new_piece, self.new_pos = self.mouse_pos_to_col_row(event)
-            self.boardArray[self.new_pos[0]][self.new_pos[1]] = self.boardArray[self.current_pos[0]][self.current_pos[1]]
-            self.boardArray[self.current_pos[0]][self.current_pos[1]] = 0
-        print(self.clicks)
+            self.boardArray[row][col] = self.selectedPiece
+            self.boardArray[self.fromRow][self.fromCol] = 0
+            self.clicks = 0
+            self.turn += 1
         self.update()
-        print("update?")
-        # self.clicks = 0
 
+    def getPieces(self, row, col):
+        if (col < 0 or col > 7 or row < 0 or row > 7):
+            return False
+        else:
+            return self.boardArray[row][col]
 
         # if event.button() == Qt.LeftButton:
 
@@ -166,11 +205,9 @@ class Board(QFrame):
                 didIWin()
         '''
 
-    # def getPieces(col, row):
-        # if (col < 1 || col > 7 || row < 1 || row > 7):
-            # return false
-        # else:
-            # return self.boardArray[col][row]
+
+
+
 
     # def possibleMoves(col, row):
         # if current_player == 1:
@@ -247,11 +284,12 @@ class Board(QFrame):
                 painter.save()
                 painter.translate(col * self.square_width(), row * self.square_height())
                 if self.boardArray[row][col] == 1:
-                    print("BLUE")
                     colour = Qt.blue
                 elif self.boardArray[row][col] == 2:
-                    print("RED")
                     colour = Qt.red
+                elif self.boardArray[row][col] == 3:
+                    colour = QColor(244, 170, 66)
+
                 else:
                     continue
                 painter.setBrush(colour)
