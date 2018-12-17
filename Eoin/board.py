@@ -3,6 +3,7 @@ from PyQt5.QtGui import QPainter, QColor
 from PyQt5.QtWidgets import QFrame, QLabel, QMessageBox
 from piece import Piece
 from player import Player
+import logging
 
 
 class Board(QFrame):
@@ -32,6 +33,8 @@ class Board(QFrame):
         self.start()                # start the game which will start the timer
         self.clicks = 0
         self.selectedPiece, self.fromRow, self.fromCol = 0, 0, 0
+        self.selectedSquare = ()
+        self.pieceCaptured = False
 
 
         self.currentPlayer = ''
@@ -129,7 +132,6 @@ class Board(QFrame):
     def mousePressEvent(self, event):
         row, col = self.mouse_pos_to_col_row(event)
         square = (row, col)
-
         # Set expected player and expected player piece
         '''
         Try to code highlight of active player on scoreboard
@@ -159,20 +161,102 @@ class Board(QFrame):
         if self.clicks == 0:
             QMessageBox.about(self, "Player Timer", "{} Timer begins".format(self.currentPlayer.name))
             self.clicks += 1
-            print("1st click")
             # Store current location value before changing the colour to highlight
             self.fromRow, self.fromCol = row, col
+            self.selectedSquare = (row, col)
             self.selectedPiece = self.boardArray[row][col]
             self.boardArray[row][col] = 3
             self.peiceSelected = True
-        elif self.clicks == 1:
+        elif self.clicks >= 1:
             self.clicks += 1
-            print("2nd click")
-            self.boardArray[row][col] = self.selectedPiece
-            self.boardArray[self.fromRow][self.fromCol] = 0
-            self.clicks = 0
-            self.turn += 1
+            if self.isValidMove(self.selectedSquare, square, self.currentPlayer):
+                self.boardArray[row][col] = self.selectedPiece
+                self.boardArray[self.fromRow][self.fromCol] = 0
+                # Remove the captured piece, opposite logic for each player
+                if self.pieceCaptured:
+                    if self.currentPlayer.name == 'Player1':
+                        # TODO:  Update Score for player
+                        if col > self.fromCol: # We've moved to the right of the board
+                            self.boardArray[row - 1][col - 1] = 0
+                        else:
+                            self.boardArray[row - 1][col + 1] = 0
+                    if self.currentPlayer.name == 'Player2':
+                        # TODO:  Update Score for player
+                        if col > self.fromCol: # We've moved to the right of the board
+                            self.boardArray[row + 1][col - 1] = 0
+                        else:
+                            self.boardArray[row + 1][col + 1] = 0
+                self.clicks = 0
+                self.turn += 1
+                self.peiceSelected = False # Reset flag for next player
         self.update()
+
+    def opponentAdjacent(self, player, currentSquare):
+        ''' Check if there is an opponent diagonally adjacent
+        '''
+        if player.name == 'Player1':
+            if (self.boardArray[currentSquare[0] + 1][currentSquare[1] - 1]
+                or self.boardArray[currentSquare[0] + 1][currentSquare[1] + 1]
+                ) == 2:
+                return True
+        if player.name == 'Player2':
+            if (self.boardArray[currentSquare[0] - 1][currentSquare[1] - 1]
+                or self.boardArray[currentSquare[0] - 1][currentSquare[1] + 1]
+                ) == 1:
+                return True
+        return False
+
+    def isValidMove(self, fromSquare, toSquare, player):
+        opponentAdj = self.opponentAdjacent(player, fromSquare)
+        if player.name == 'Player1':
+            # If there's no adjacent opponent, valid move is 1 diagonal forward
+            # as long as destination has no piece
+            if not opponentAdj:
+                if ((((fromSquare[0] + 1,fromSquare[1] + 1) == toSquare)
+                or (fromSquare[0] + 1, fromSquare[1] - 1) == toSquare)
+                and self.getPieces(toSquare[0], toSquare[1]) == 0):
+                    return True
+            # If we have an adjacent opponent, we can move 1 diagnonal forward
+            # or 2 diagnonal forward as long as destination has no piece
+            if opponentAdj:
+                if ((((fromSquare[0] + 2,fromSquare[1] + 2)  == toSquare)
+                or ((fromSquare[0] + 2, fromSquare[1] - 2) == toSquare))
+                and self.getPieces(toSquare[0], toSquare[1]) == 0):
+                    self.pieceCaptured = True
+                    return True
+                if ((((fromSquare[0] + 1,fromSquare[1] + 1) == toSquare)
+                or ((fromSquare[0] + 1, fromSquare[1] - 1) == toSquare))
+                and self.getPieces(toSquare[0], toSquare[1]) == 0):
+                    self.pieceCaptured = False
+                    return True
+            else:
+                return QMessageBox.about(self, "Error", "{} invalid move".format(player.name))
+        if player.name == 'Player2':
+            # If there's no adjacent opponent, valid move is 1 diagonal forward
+            # as long as destination has no piece
+            if not opponentAdj:
+                if ((((fromSquare[0] - 1,fromSquare[1] + 1) == toSquare)
+                or (fromSquare[0] - 1, fromSquare[1] - 1) == toSquare)
+                and self.getPieces(toSquare[0], toSquare[1]) == 0):
+                    return True
+            # If we have an adjacent opponent, we can move 1 diagnonal forward
+            # or 2 diagnonal forward as long as destination has no piece
+            if opponentAdj:
+                if ((((fromSquare[0] - 2,fromSquare[1] + 2)  == toSquare)
+                or ((fromSquare[0] - 2, fromSquare[1] - 2) == toSquare))
+                and self.getPieces(toSquare[0], toSquare[1]) == 0):
+                    self.pieceCaptured = True
+                    return True
+                if ((((fromSquare[0] - 1,fromSquare[1] + 1) == toSquare)
+                or ((fromSquare[0] - 1, fromSquare[1] - 1) == toSquare))
+                and self.getPieces(toSquare[0], toSquare[1]) == 0):
+                    self.pieceCaptured = False
+                    return True
+            else:
+                return QMessageBox.about(self, "Error", "{} invalid move".format(player.name))
+        return False
+
+
 
     def getPieces(self, row, col):
         if (col < 0 or col > 7 or row < 0 or row > 7):
