@@ -3,6 +3,7 @@ from PyQt5.QtGui import QPainter, QColor
 from PyQt5.QtWidgets import QFrame, QLabel, QMessageBox
 from piece import Piece
 from player import Player
+from scoreBoard import ScoreBoard
 import logging
 
 
@@ -10,6 +11,7 @@ class Board(QFrame):
     msg2StatusBar = pyqtSignal(str)
     updateTimerSignal = pyqtSignal(int) # signal sent when timer is updated
     clickLocationSignal = pyqtSignal(str) # signal sent when there is a new click location
+    updateActivePlayer = pyqtSignal(str) # signal sent when there is a new click location
 
     boardWidth = 8
     boardHeight = 8
@@ -37,9 +39,11 @@ class Board(QFrame):
         self.pieceCaptured = False
 
 
-        self.currentPlayer = ''
+        self.currentPlayer = Player.Player1 # Defaut Start
         self.turn = 0
         self.peiceSelected = False
+        self.updateActivePlayer.emit(self.currentPlayer.name)
+        print("CURRENT PLAYER:  {}".format(self.currentPlayer.name))
 
         self.boardArray = [
             [0, 1, 0, 1, 0, 1, 0, 1],
@@ -139,11 +143,9 @@ class Board(QFrame):
         if self.playerTurn() == 0:  # We start with Player 1
             self.currentPlayer = Player.Player1
             playerPiece = Piece.Blue
-            print("PLayer 1")
         else:
             self.currentPlayer = Player.Player2
             playerPiece = Piece.Red
-            print("PLayer 2")
 
         # If player begins by selecting an empty square, create pop up
         if self.clicks == 0 and self.getPieces(row, col) == 0:
@@ -188,7 +190,12 @@ class Board(QFrame):
                             self.boardArray[row + 1][col + 1] = 0
                 self.clicks = 0
                 self.turn += 1
-                self.peiceSelected = False # Reset flag for next player
+                if self.currentPlayer.name == 'Player1':
+                    self.updateActivePlayer.emit('Player2')
+                else:
+                    self.updateActivePlayer.emit('Player1')
+                self.peiceSelected = False  # Reset flag for next player
+        # ScoreBoard.make_connection
         self.update()
 
     def opponentAdjacent(self, player, currentSquare):
@@ -351,9 +358,9 @@ class Board(QFrame):
         for row in range(0, Board.boardHeight):
             for col in range(0, Board.boardWidth):
                 if (row + col) % 2 == 0:
-                    colour = Qt.white
+                    colour = QColor(255, 255, 204)
                 else:
-                    colour = Qt.black
+                    colour = QColor(204, 255, 204)
                 painter.save()
                 painter.translate(col * self.square_width(), row * self.square_height())
                 painter.setBrush(colour)
@@ -368,9 +375,9 @@ class Board(QFrame):
                 painter.save()
                 painter.translate(col * self.square_width(), row * self.square_height())
                 if self.boardArray[row][col] == 1:
-                    colour = Qt.blue
+                    colour = QColor(128, 179, 255)
                 elif self.boardArray[row][col] == 2:
-                    colour = Qt.red
+                    colour = QColor(255, 128, 128)
                 elif self.boardArray[row][col] == 3:
                     colour = QColor(244, 170, 66)
 
@@ -381,4 +388,4 @@ class Board(QFrame):
                     radius_x = self.square_height() / 2
                     radius_y = self.square_width() / 2
                     center = QPoint(radius_y, radius_x)
-                    painter.drawEllipse(center, radius_y, radius_x)
+                    painter.drawEllipse(center, 35, 35)
