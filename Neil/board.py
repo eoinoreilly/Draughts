@@ -202,11 +202,31 @@ class Board(QFrame):
         ''' Check if there is an opponent diagonally adjacent
         '''
         if player.name == 'Player1':
+            # Only look to the left column if we're on the right edge of the board
+            if currentSquare[1] == 7:
+                if self.boardArray[currentSquare[0] + 1][6] == 2:
+                    return True
+                return False
+            # Only look to the right column if we're on the left edge of the board
+            if currentSquare[1] == 0:
+                if self.boardArray[currentSquare[0] + 1][1] == 2:
+                    return True
+                return False
             if (self.boardArray[currentSquare[0] + 1][currentSquare[1] - 1]
                 or self.boardArray[currentSquare[0] + 1][currentSquare[1] + 1]
                 ) == 2:
                 return True
         if player.name == 'Player2':
+            # Only look to the left column if we're on the right edge of the board
+            if currentSquare[1] == 7:
+                if self.boardArray[currentSquare[0] - 1][6] == 2:
+                    return True
+                return False
+            # Only look to the right column if we're on the left edge of the board
+            if currentSquare[1] == 0:
+                if self.boardArray[currentSquare[0] - 1][1] == 2:
+                    return True
+                return False
             if (self.boardArray[currentSquare[0] - 1][currentSquare[1] - 1]
                 or self.boardArray[currentSquare[0] - 1][currentSquare[1] + 1]
                 ) == 1:
