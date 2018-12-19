@@ -337,13 +337,13 @@ class Board(QFrame):
             if opponent_adj:
                 if ((((from_square[0] + 2, from_square[1] + 2)  == to_square)
                   or ((from_square[0] + 2, from_square[1] - 2) == to_square))
-                  and self.get_pieces(to_square[0], to_square[1] == 0)):
+                  and self.get_pieces(to_square[0], to_square[1]) == 0):
                     self.pieceCaptured = True
                     return True
 
                 if ((((from_square[0] + 1, from_square[1] + 1) == to_square)
                   or ((from_square[0] + 1, from_square[1] - 1) == to_square))
-                  and self.get_pieces(to_square[0], to_square[1] == 0)):
+                  and self.get_pieces(to_square[0], to_square[1]) == 0):
                     self.pieceCaptured = False
                     return True
 
@@ -356,7 +356,7 @@ class Board(QFrame):
             if not opponent_adj:
                 if ((((from_square[0] - 1,from_square[1] + 1) == to_square)
                   or (from_square[0] - 1, from_square[1] - 1) == to_square)
-                  and self.get_pieces(to_square[0], to_square[1])) == 0:
+                  and self.get_pieces(to_square[0], to_square[1]) == 0):
                     return True
 
             # If we have an adjacent opponent, we can move 1 diagonal forward
