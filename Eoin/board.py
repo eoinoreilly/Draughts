@@ -10,7 +10,8 @@ class Board(QFrame):
     msg2StatusBar = pyqtSignal(str)
     updateTimerSignal = pyqtSignal(int) # signal sent when timer is updated
     clickLocationSignal = pyqtSignal(str) # signal sent when there is a new click location
-    updateActivePlayer = pyqtSignal(str) # signal sent when there is a new active player
+    updateActivePlayer = pyqtSignal(str)  # signal sent when there is a new active player
+    updateScore = pyqtSignal(str)
 
     boardWidth = 8
     boardHeight = 8
@@ -28,7 +29,6 @@ class Board(QFrame):
         self.setFocusPolicy(Qt.StrongFocus)
         self.isStarted = False
         self.isPaused = False
-        # self.reset()
         self.start()  # start the game which will start the timer
         self.clicks = 0
         self.selectedPiece, self.fromRow, self.fromCol = 0, 0, 0
@@ -97,7 +97,7 @@ class Board(QFrame):
             return
 
         if self.clicks == 0:
-            QMessageBox.about(self, "Player Timer", "{} Timer begins".format(self.currentPlayer.name))
+            # QMessageBox.about(self, "Player Timer", "{} Timer begins".format(self.currentPlayer.name))
             self.clicks += 1
             # Store current location value before changing the colour to highlight
             self.fromRow, self.fromCol = row, col
@@ -114,7 +114,7 @@ class Board(QFrame):
                 # Remove the captured piece, opposite logic for each player
                 if self.pieceCaptured:
                     if self.currentPlayer.name == 'Player1':
-                        # TODO:  Update Score for player
+                        self.updateScore.emit(self.currentPlayer.name)
                         if col > self.fromCol: # We've moved to the right of the board
                             self.boardArray[row - 1][col - 1] = 0
 
@@ -122,13 +122,14 @@ class Board(QFrame):
                             self.boardArray[row - 1][col + 1] = 0
 
                     if self.currentPlayer.name == 'Player2':
-                        # TODO:  Update Score for player
+                        self.updateScore.emit(self.currentPlayer.name)
                         if col > self.fromCol: # We've moved to the right of the board
                             self.boardArray[row + 1][col - 1] = 0
 
                         else:
                             self.boardArray[row + 1][col + 1] = 0
-
+                # Reset flags
+                self.pieceCaptured = False
                 self.clicks = 0
                 self.turn += 1
 
@@ -252,7 +253,6 @@ class Board(QFrame):
         self.isStarted = True
         self.isWaitingAfterLine = False
         self.numLinesRemoved = 0
-        # self.reset()
         self.msg2StatusBar.emit(str("status message"))
         self.timer.start(Board.timerSpeed, self)
         print("start () - timer is started")
@@ -307,12 +307,12 @@ class Board(QFrame):
         if player.name == 'Player2':
             # Only look to the left column if we're on the right edge of the board
             if current_square[1] == 7:
-                if self.boardArray[current_square[0] - 1][6] == 2:
+                if self.boardArray[current_square[0] - 1][6] == 1:
                     return True
                 return False
             # Only look to the right column if we're on the left edge of the board
             if current_square[1] == 0:
-                if self.boardArray[current_square[0] - 1][1] == 2:
+                if self.boardArray[current_square[0] - 1][1] == 1:
                     return True
                 return False
             if (self.boardArray[current_square[0] - 1][current_square[1] - 1]

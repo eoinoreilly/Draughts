@@ -55,6 +55,12 @@ class Draughts(QMainWindow):
         '''
         Allow user to reset the game
         '''
+        self.scoreBoard.p1_score = 0
+        self.scoreBoard.p2_score = 0
+        self.scoreBoard.p1_pieces_remaining = 12
+        self.scoreBoard.p2_pieces_remaining = 12
+        self.scoreBoard.label_player1.setText("Player1\n\nScore {}\n Remaining {}".format(self.scoreBoard.p1_score, self.scoreBoard.p1_pieces_remaining))
+        self.scoreBoard.label_player1.setText("Player1\n\nScore {}\n Remaining {}".format(self.scoreBoard.p1_score, self.scoreBoard.p1_pieces_remaining))
         self.resetGame.emit()
 
     def get_board(self):
