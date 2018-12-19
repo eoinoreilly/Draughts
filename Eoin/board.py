@@ -106,6 +106,7 @@ class Board(QFrame):
             self.selectedPiece = self.boardArray[row][col]
             self.boardArray[row][col] = 3
             self.pieceSelected = True
+        
         elif self.clicks >= 1:
             self.clicks += 1
             if self.is_valid_move(self.selectedSquare, square, self.currentPlayer):
