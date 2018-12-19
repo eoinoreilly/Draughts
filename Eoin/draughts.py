@@ -19,22 +19,16 @@ class Draughts(QMainWindow):
 
         self.init_ui()
 
-    def getBoard(self):
-        return self.board
-
-    def getScoreBoard(self):
-        return self.scoreBoard
-
     def init_ui(self):
         # initiates application UI
         self.tboard = Board(self)
         # self.tboard.setStyleSheet(stylesheet)
         self.setCentralWidget(self.tboard)
-        # dock
+        
         self.scoreBoard = ScoreBoard()
         self.scoreBoard.setAllowedAreas(Qt.RightDockWidgetArea | Qt.LeftDockWidgetArea)
         self.addDockWidget(Qt.RightDockWidgetArea, self.scoreBoard)
-
+        
         self.toolbar = self.addToolBar("MainToolBar")
         self.toolbar.addWidget(QLabel("Some widget"))
 
@@ -45,22 +39,23 @@ class Draughts(QMainWindow):
         self.tboard.start()
 
         self.resize(800, 800)
-        # self.setFixedSize(self.size())
         self.center()
         self.setWindowTitle('DraughtsV3')
         self.show()
 
+    def get_board(self):
+        return self.board
+
+    def get_score_board(self):
+        return self.scoreBoard
 
     def center(self):
         # centers the window on the screen
         screen = QDesktopWidget().screenGeometry()
         size = self.geometry()
-        self.move((screen.width() - size.width()) / 2,
-                  (screen.height() - size.height()) / 2)
-
-
-    def get_score_board(self):
-        return self.scoreboard
+        center_x = int((screen.width() - size.width()) / 2)
+        center_y = int((screen.height() - size.height()) / 2)
+        self.move(center_x, center_y)
 
 
 if __name__ == "__main__":
