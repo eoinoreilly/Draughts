@@ -1,13 +1,14 @@
 import sys
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QMainWindow, QDesktopWidget, QApplication, QLabel
+from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtWidgets import QMainWindow, QDesktopWidget, QApplication, QLabel, QAction, QMessageBox
 from board import Board
 from scoreBoard import ScoreBoard
+from PyQt5.QtGui import QIcon
 
 
 class Draughts(QMainWindow):
-
+    resetGame = pyqtSignal()
     def __init__(self):
         super().__init__()
         # stylesheet = \
@@ -24,17 +25,24 @@ class Draughts(QMainWindow):
         self.tboard = Board(self)
         # self.tboard.setStyleSheet(stylesheet)
         self.setCentralWidget(self.tboard)
-        
+
         self.scoreBoard = ScoreBoard()
         self.scoreBoard.setAllowedAreas(Qt.RightDockWidgetArea | Qt.LeftDockWidgetArea)
         self.addDockWidget(Qt.RightDockWidgetArea, self.scoreBoard)
-        
+
         self.toolbar = self.addToolBar("MainToolBar")
         self.toolbar.addWidget(QLabel("Some widget"))
+
+
+        resetAction = QAction(QIcon("./icons/reset.png"), "Reset", self)
+        resetAction.setShortcut("Ctrl+R")
+        self.toolbar.addAction(resetAction)
+        resetAction.triggered.connect(self.reset)
 
         self.statusbar = self.statusBar()
         self.tboard.msg2StatusBar[str].connect(self.statusbar.showMessage)
         self.scoreBoard.make_connection(self.tboard)
+        self.tboard.make_connection(self)
 
         self.tboard.start()
 
@@ -42,6 +50,12 @@ class Draughts(QMainWindow):
         self.center()
         self.setWindowTitle('DraughtsV3')
         self.show()
+
+    def reset(self):
+        '''
+        Allow user to reset the game
+        '''
+        self.resetGame.emit()
 
     def get_board(self):
         return self.board

@@ -1,10 +1,9 @@
-from PyQt5.QtCore import Qt, QBasicTimer, pyqtSignal, QPoint
+from PyQt5.QtCore import Qt, QBasicTimer, pyqtSignal, QPoint, pyqtSlot
 from PyQt5.QtGui import QPainter, QColor
 from PyQt5.QtWidgets import QFrame, QLabel, QMessageBox
 from piece import Piece
 from player import Player
 from scoreBoard import ScoreBoard
-import logging
 
 
 class Board(QFrame):
@@ -29,7 +28,7 @@ class Board(QFrame):
         self.setFocusPolicy(Qt.StrongFocus)
         self.isStarted = False
         self.isPaused = False
-        self.reset()
+        # self.reset()
         self.start()  # start the game which will start the timer
         self.clicks = 0
         self.selectedPiece, self.fromRow, self.fromCol = 0, 0, 0
@@ -140,7 +139,6 @@ class Board(QFrame):
                     self.updateActivePlayer.emit('Player1')
 
                 self.pieceSelected = False  # Reset flag for next player
-        # ScoreBoard.make_connection
         self.update()
 
     def keyPressEvent(self, event):
@@ -254,7 +252,7 @@ class Board(QFrame):
         self.isStarted = True
         self.isWaitingAfterLine = False
         self.numLinesRemoved = 0
-        self.reset()
+        # self.reset()
         self.msg2StatusBar.emit(str("status message"))
         self.timer.start(Board.timerSpeed, self)
         print("start () - timer is started")
@@ -276,9 +274,17 @@ class Board(QFrame):
             self.msg2StatusBar.emit(str("status message"))
         self.update()
 
+    def make_connection(self, draughts):
+        draughts.resetGame.connect(self.reset)
+
+    @pyqtSlot()
     def reset(self):
-        '''clears pieces from the board'''
-        # todo write code to reset game
+        '''
+        Reset Game
+        '''
+        self.init_board()
+        # TODO:  Verify scores/counters are also reset
+        self.update()
 
     def opponent_adjacent(self, player, current_square):
         ''' Check if there is an opponent diagonally adjacent
