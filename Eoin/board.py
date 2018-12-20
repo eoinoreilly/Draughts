@@ -79,12 +79,10 @@ class Board(QFrame):
         if self.player_turn() == 0:  # We start with Player 1
             self.currentPlayer = Player.Player1
             player_piece = Piece.Blue
-            self.msg2StatusBar.emit("{}, it's your turn!".format(self.currentPlayer.name))
 
         else:
             self.currentPlayer = Player.Player2
             player_piece = Piece.Red
-            self.msg2StatusBar.emit("{}, it's your turn!".format(self.currentPlayer.name))
 
         # If player begins by selecting an empty square, create pop up
         if self.clicks == 0 and self.get_pieces(row, col) == 0:
@@ -137,9 +135,11 @@ class Board(QFrame):
 
                 if self.currentPlayer.name == 'Player1':
                     self.updateActivePlayer.emit('Player2')
+                    self.msg2StatusBar.emit("Player2, it's your turn!")
 
                 else:
                     self.updateActivePlayer.emit('Player1')
+                    self.msg2StatusBar.emit("Player1, it's your turn!")
 
                 self.pieceSelected = False  # Reset flag for next player
         self.update()
