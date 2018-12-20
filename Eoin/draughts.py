@@ -32,11 +32,11 @@ class Draughts(QMainWindow):
         self.addDockWidget(Qt.RightDockWidgetArea, self.scoreBoard)
         
         self.reset_button = QPushButton(QIcon("../img/reset.png"), "", self)
-        self.reset_button.setToolTip("Reset the game.")
+        self.reset_button.setToolTip("Reset the game")
         self.reset_button.clicked.connect(self.reset)
         
         self.pause_button = QPushButton(QIcon("../img/pause_play.png"), "", self)
-        self.pause_button.setToolTip("Pause or continue the game.")
+        self.pause_button.setToolTip("Pause or continue the game")
         self.pause_button.clicked.connect(self.tboard.pause)
 
         self.toolbar = self.addToolBar("MainToolBar")
@@ -52,7 +52,7 @@ class Draughts(QMainWindow):
 
         self.tboard.start()
 
-        self.resize(800, 800)
+        self.resize(600, 600)
         self.center()
         self.setWindowTitle('DraughtsV3')
         self.show()

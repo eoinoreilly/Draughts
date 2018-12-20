@@ -29,7 +29,6 @@ class Board(QFrame):
         self.setFocusPolicy(Qt.StrongFocus)
         self.isStarted = False
         self.isPaused = False
-        self.start()  # start the game which will start the timer
         self.clicks = 0
         self.selectedPiece, self.fromRow, self.fromCol = 0, 0, 0
         self.selectedSquare = ()
@@ -50,6 +49,7 @@ class Board(QFrame):
             [0, 2, 0, 2, 0, 2, 0, 2],
             [2, 0, 2, 0, 2, 0, 2, 0],
         ]
+        self.start()  # start the game which will start the timer
 
     def paintEvent(self, event):
         # paints the board and the pieces of the game
@@ -79,10 +79,12 @@ class Board(QFrame):
         if self.player_turn() == 0:  # We start with Player 1
             self.currentPlayer = Player.Player1
             player_piece = Piece.Blue
+            self.msg2StatusBar.emit("{}, it's your turn!".format(self.currentPlayer.name))
 
         else:
             self.currentPlayer = Player.Player2
             player_piece = Piece.Red
+            self.msg2StatusBar.emit("{}, it's your turn!".format(self.currentPlayer.name))
 
         # If player begins by selecting an empty square, create pop up
         if self.clicks == 0 and self.get_pieces(row, col) == 0:
@@ -253,7 +255,7 @@ class Board(QFrame):
         self.isStarted = True
         self.isWaitingAfterLine = False
         self.numLinesRemoved = 0
-        self.msg2StatusBar.emit(str("status message"))
+        self.msg2StatusBar.emit("{}, it's your turn!".format(self.currentPlayer.name))
         self.timer.start(Board.timerSpeed, self)
         print("start () - timer is started")
 
@@ -267,11 +269,11 @@ class Board(QFrame):
 
         if self.isPaused:
             self.timer.stop()
-            self.msg2StatusBar.emit("paused")
+            self.msg2StatusBar.emit("Paused on {}'s turn.".format(self.currentPlayer.name))
 
         else:
             self.timer.start(Board.timerSpeed, self)
-            self.msg2StatusBar.emit(str("status message"))
+            self.msg2StatusBar.emit("{}, it's your turn!".format(self.currentPlayer.name))
         self.update()
 
     def make_connection(self, draughts):
