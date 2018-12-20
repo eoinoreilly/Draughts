@@ -1,14 +1,15 @@
 import sys
 
 from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtWidgets import QMainWindow, QDesktopWidget, QApplication, QLabel, QAction, QMessageBox
+from PyQt5.QtWidgets import QMainWindow, QDesktopWidget, QApplication, QLabel, QAction, QMessageBox, QPushButton
+from PyQt5.QtGui import QIcon
 from board import Board
 from scoreBoard import ScoreBoard
-from PyQt5.QtGui import QIcon
 
 
 class Draughts(QMainWindow):
     resetGame = pyqtSignal()
+    
     def __init__(self):
         super().__init__()
         # stylesheet = \
@@ -29,15 +30,20 @@ class Draughts(QMainWindow):
         self.scoreBoard = ScoreBoard()
         self.scoreBoard.setAllowedAreas(Qt.RightDockWidgetArea | Qt.LeftDockWidgetArea)
         self.addDockWidget(Qt.RightDockWidgetArea, self.scoreBoard)
+        
+        self.reset_button = QPushButton(QIcon("../img/reset.png"), "", self)
+        self.reset_button.setToolTip("Reset the game.")
+        self.reset_button.clicked.connect(self.reset)
+        
+        self.pause_button = QPushButton(QIcon("../img/pause_play.png"), "", self)
+        self.pause_button.setToolTip("Pause or continue the game.")
+        self.pause_button.clicked.connect(self.tboard.pause)
 
         self.toolbar = self.addToolBar("MainToolBar")
-        self.toolbar.addWidget(QLabel("Some widget"))
-
-
-        resetAction = QAction(QIcon("./icons/reset.png"), "Reset", self)
-        resetAction.setShortcut("Ctrl+R")
-        self.toolbar.addAction(resetAction)
-        resetAction.triggered.connect(self.reset)
+        self.toolbar.setOrientation(Qt.Horizontal)
+        self.toolbar.addWidget(self.reset_button)
+        self.toolbar.addSeparator()
+        self.toolbar.addWidget(self.pause_button)
 
         self.statusbar = self.statusBar()
         self.tboard.msg2StatusBar[str].connect(self.statusbar.showMessage)
@@ -60,7 +66,7 @@ class Draughts(QMainWindow):
         self.scoreBoard.p1_pieces_remaining = 12
         self.scoreBoard.p2_pieces_remaining = 12
         self.scoreBoard.label_player1.setText("Player1\n\nScore {}\n Remaining {}".format(self.scoreBoard.p1_score, self.scoreBoard.p1_pieces_remaining))
-        self.scoreBoard.label_player1.setText("Player1\n\nScore {}\n Remaining {}".format(self.scoreBoard.p1_score, self.scoreBoard.p1_pieces_remaining))
+        self.scoreBoard.label_player2.setText("Player2\n\nScore {}\n Remaining {}".format(self.scoreBoard.p2_score, self.scoreBoard.p2_pieces_remaining))
         self.resetGame.emit()
 
     def get_board(self):
