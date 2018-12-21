@@ -1,3 +1,5 @@
+'''__main__.py'''
+
 from PyQt5.QtWidgets import QApplication
 from draughts import Draughts
 import sys

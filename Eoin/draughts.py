@@ -1,3 +1,5 @@
+'''draughts.py'''
+
 import sys
 
 from PyQt5.QtCore import Qt, pyqtSignal
@@ -9,32 +11,24 @@ from scoreBoard import ScoreBoard
 
 class Draughts(QMainWindow):
     resetGame = pyqtSignal()
-    
+
     def __init__(self):
         super().__init__()
-        # stylesheet = \
-        #     ".QWidget {\n" \
-        #     + "border: 20px solid black;\n" \
-        #     + "border-radius: 4px;\n" \
-        #     + "background-color: rgb(255, 255, 255);\n" \
-        #     + "}"
-
         self.init_ui()
 
     def init_ui(self):
         # initiates application UI
         self.tboard = Board(self)
-        # self.tboard.setStyleSheet(stylesheet)
         self.setCentralWidget(self.tboard)
 
         self.scoreBoard = ScoreBoard()
         self.scoreBoard.setAllowedAreas(Qt.RightDockWidgetArea | Qt.LeftDockWidgetArea)
         self.addDockWidget(Qt.RightDockWidgetArea, self.scoreBoard)
-        
+
         self.reset_button = QPushButton(QIcon("../img/reset.png"), "", self)
         self.reset_button.setToolTip("Reset the game")
         self.reset_button.clicked.connect(self.reset)
-        
+
         self.pause_button = QPushButton(QIcon("../img/pause_play.png"), "", self)
         self.pause_button.setToolTip("Pause or continue the game")
         self.pause_button.clicked.connect(self.tboard.pause)

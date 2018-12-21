@@ -1,3 +1,5 @@
+'''scoreBoard.py'''
+
 from PyQt5.QtWidgets import QDockWidget, QLabel, QWidget, QVBoxLayout, QMessageBox
 from PyQt5.QtCore import pyqtSlot, Qt
 # from board import Board
@@ -22,6 +24,7 @@ class ScoreBoard(QDockWidget):
         self.widget.setMinimumSize(150,150) # Set minimum width to prevent text overflow
         self.main_layout = QVBoxLayout()
 
+        # Update score widget with Player Specific scoreing details
         self.label_player1 = QLabel("Player1\n\nScore {}\n Remaining {}".format(self.p1_score, self.p1_pieces_remaining))
         self.label_player1.setStyleSheet('')
         self.label_player1.setAlignment(Qt.AlignCenter | Qt.AlignVCenter)
@@ -31,14 +34,10 @@ class ScoreBoard(QDockWidget):
         self.label_player2.setStyleSheet('')
         self.label_player2.setAlignment(Qt.AlignCenter | Qt.AlignVCenter)
 
-        # self.label_currentPlayer = QLabel("CurrentPlayer: ")
-        # self.label_click_location = QLabel("Click Location: ")
         self.label_timeRemaining = QLabel("Time remaining: ")
         self.widget.setLayout(self.main_layout)
         self.main_layout.addWidget(self.label_player1)
         self.main_layout.addWidget(self.label_player2)
-        # self.main_layout.addWidget(self.label_currentPlayer)
-        # self.main_layout.addWidget(self.label_click_location)
         self.main_layout.addWidget(self.label_timeRemaining)
         self.setWidget(self.widget)
         self.show()
@@ -53,7 +52,9 @@ class ScoreBoard(QDockWidget):
 
     @pyqtSlot(str)  # checks to make sure that the following slot is receiving an argument of the right type
     def updateScore(self, player):
-        print(player)
+        '''
+        pyqtSlot from player class to update the score of the passed player
+        '''
         if player == 'Player1':
             self.p1_score += 1
             self.p2_pieces_remaining -= 1
@@ -62,6 +63,7 @@ class ScoreBoard(QDockWidget):
             self.label_player2.setText("Player2\n\nScore {}\n Remaining {}".format(self.p2_score, self.p2_pieces_remaining))
             if self.p2_pieces_remaining == 0:
                 QMessageBox.about(self, "Winner", "Congratulations\n{} is the Winner".format(player))
+
         elif player == 'Player2':
             self.p2_score += 1
             self.p1_pieces_remaining -= 1
@@ -83,6 +85,10 @@ class ScoreBoard(QDockWidget):
 
     @pyqtSlot(str)
     def set_player_highlight(self, player):
+        '''
+        pyqtSlot from player class to highlight the active player in the
+        scoreBoard widget
+        '''
         if player == 'Player1':
             self.label_player1.setStyleSheet('font-weight: bold; background: rgb(128, 179, 255)')
             self.label_player2.setStyleSheet('')
