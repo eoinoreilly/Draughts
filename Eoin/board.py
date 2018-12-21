@@ -73,7 +73,7 @@ class Board(QFrame):
 
     def mousePressEvent(self, event):
         row, col = self.mouse_pos_to_col_row(event)
-        square = (row, col)
+        currentSquare = (row, col)
 
         # Set expected player and expected player piece
         if self.player_turn() == 0:  # We start with Player 1
@@ -106,9 +106,15 @@ class Board(QFrame):
             self.boardArray[row][col] = 3
             self.pieceSelected = True
 
+        # Allow player to deselect a square
+        elif self.pieceSelected and (self.selectedSquare == currentSquare):
+            self.boardArray[row][col] = self.selectedPiece
+            self.pieceSelected = False
+            self.clicks = 0
+
         elif self.clicks >= 1:
             self.clicks += 1
-            if self.is_valid_move(self.selectedSquare, square, self.currentPlayer):
+            if self.is_valid_move(self.selectedSquare, currentSquare, self.currentPlayer):
                 self.boardArray[row][col] = self.selectedPiece
                 self.boardArray[self.fromRow][self.fromCol] = 0
                 # Remove the captured piece, opposite logic for each player
