@@ -2,7 +2,6 @@
 
 from PyQt5.QtWidgets import QDockWidget, QLabel, QWidget, QVBoxLayout, QMessageBox
 from PyQt5.QtCore import pyqtSlot, Qt
-# from board import Board
 import sys
 
 
@@ -14,6 +13,7 @@ class ScoreBoard(QDockWidget):
 
     def init_ui(self):
         # initiates ScoreBoard
+        self.player = 'Player1'
         self.p1_score = 0
         self.p2_score = 0
         self.p1_pieces_remaining = 12
@@ -34,11 +34,18 @@ class ScoreBoard(QDockWidget):
         self.label_player2.setStyleSheet('')
         self.label_player2.setAlignment(Qt.AlignCenter | Qt.AlignVCenter)
 
-        self.label_timeRemaining = QLabel("Time remaining: ")
+        self.p1_time_remaining = QLabel("Time remaining: ")
+        self.p1_time_remaining.setAlignment(Qt.AlignCenter | Qt.AlignVCenter)
+        self.p1_time_remaining.setStyleSheet('font-weight: bold; background: rgb(128, 179, 255)')
+        
+        self.p2_time_remaining = QLabel("Time remaining: ")
+        self.p2_time_remaining.setAlignment(Qt.AlignCenter | Qt.AlignVCenter)
+        
         self.widget.setLayout(self.main_layout)
         self.main_layout.addWidget(self.label_player1)
+        self.main_layout.addWidget(self.p1_time_remaining)
         self.main_layout.addWidget(self.label_player2)
-        self.main_layout.addWidget(self.label_timeRemaining)
+        self.main_layout.addWidget(self.p2_time_remaining)
         self.setWidget(self.widget)
         self.show()
 
@@ -78,10 +85,13 @@ class ScoreBoard(QDockWidget):
     def set_time_remaining(self, time_remaining):
         # updates the time remaining label to show the time remaining
         # Keep the changing value on a new line so as not to keep altering the width of the QDockWidget
+        if self.player == 'Player1':
+            update = "Time Remaining:\n" + str(time_remaining)
+            self.p1_time_remaining.setText(update)
 
-        update = "Time Remaining:\n" + str(time_remaining)
-        self.label_timeRemaining.setText(update)
-        # self.redraw()
+        elif self.player == 'Player2':
+            update = "Time Remaining:\n" + str(time_remaining)
+            self.p2_time_remaining.setText(update)
 
     @pyqtSlot(str)
     def set_player_highlight(self, player):
@@ -89,11 +99,17 @@ class ScoreBoard(QDockWidget):
         pyqtSlot from player class to highlight the active player in the
         scoreBoard widget
         '''
-        if player == 'Player1':
+        self.player = player
+        
+        if self.player == 'Player1':
             self.label_player1.setStyleSheet('font-weight: bold; background: rgb(128, 179, 255)')
+            self.p1_time_remaining.setStyleSheet('font-weight: bold; background: rgb(128, 179, 255)')
             self.label_player2.setStyleSheet('')
+            self.p2_time_remaining.setStyleSheet('')
 
-        elif player == 'Player2':
+        elif self.player == 'Player2':
             self.label_player2.setStyleSheet('font-weight: bold; background: rgb(255, 128, 128)')
+            self.p2_time_remaining.setStyleSheet('font-weight: bold; background: rgb(255, 128, 128)')
             self.label_player1.setStyleSheet('')
+            self.p1_time_remaining.setStyleSheet('')
         self.update()
