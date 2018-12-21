@@ -37,7 +37,6 @@ class Board(QFrame):
         self.turn = 0
         self.pieceSelected = False
         self.updateActivePlayer.emit(self.currentPlayer.name)
-        print("CURRENT PLAYER:  {}".format(self.currentPlayer.name))
 
         self.boardArray = [
             [0, 1, 0, 1, 0, 1, 0, 1],
@@ -86,7 +85,6 @@ class Board(QFrame):
 
         # If player begins by selecting an empty square, create pop up
         if self.clicks == 0 and self.get_pieces(row, col) == 0:
-            print(self.clicks)
             QMessageBox.about(self, "Error", "You must select a piece first")
             return
 
@@ -308,9 +306,9 @@ class Board(QFrame):
                 if self.boardArray[current_square[0] + 1][1] == 2:
                     return True
                 return False
-            if (self.boardArray[current_square[0] + 1][current_square[1] - 1]
-                or self.boardArray[current_square[0] + 1][current_square[1] + 1]
-                ) == 2:
+            if (self.boardArray[current_square[0] + 1][current_square[1] - 1] == 2
+                or self.boardArray[current_square[0] + 1][current_square[1] + 1] == 2
+                ):
                 return True
         if player.name == 'Player2':
             # Only look to the left column if we're on the right edge of the board
@@ -323,15 +321,14 @@ class Board(QFrame):
                 if self.boardArray[current_square[0] - 1][1] == 1:
                     return True
                 return False
-            if (self.boardArray[current_square[0] - 1][current_square[1] - 1]
-                or self.boardArray[current_square[0] - 1][current_square[1] + 1]
-                ) == 1:
+            if (self.boardArray[current_square[0] - 1][current_square[1] - 1] == 1
+                or self.boardArray[current_square[0] - 1][current_square[1] + 1] == 1
+                ):
                 return True
         return False
 
     def is_valid_move(self, from_square, to_square, player):
         opponent_adj = self.opponent_adjacent(player, from_square)
-
         if player.name == 'Player1':
             # If there's no adjacent opponent, valid move is 1 diagonal forward
             # as long as destination has no piece
