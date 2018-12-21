@@ -25,7 +25,7 @@ class ScoreBoard(QDockWidget):
         self.label_player1 = QLabel("Player1\n\nScore {}\n Remaining {}".format(self.p1_score, self.p1_pieces_remaining))
         self.label_player1.setStyleSheet('')
         self.label_player1.setAlignment(Qt.AlignCenter | Qt.AlignVCenter)
-        self.label_player1.setStyleSheet('font-weight: bold; background: yellow')
+        self.label_player1.setStyleSheet('font-weight: bold; background: rgb(128, 179, 255)')
 
         self.label_player2 = QLabel("Player2\n\nScore {}\n Remaining {}".format(self.p2_score, self.p2_pieces_remaining))
         self.label_player2.setStyleSheet('')
@@ -84,10 +84,10 @@ class ScoreBoard(QDockWidget):
     @pyqtSlot(str)
     def set_player_highlight(self, player):
         if player == 'Player1':
-            self.label_player1.setStyleSheet('font-weight: bold; background: yellow')
+            self.label_player1.setStyleSheet('font-weight: bold; background: rgb(128, 179, 255)')
             self.label_player2.setStyleSheet('')
 
         elif player == 'Player2':
-            self.label_player2.setStyleSheet('font-weight: bold; background: yellow')
+            self.label_player2.setStyleSheet('font-weight: bold; background: rgb(255, 128, 128)')
             self.label_player1.setStyleSheet('')
         self.update()
