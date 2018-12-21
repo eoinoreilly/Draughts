@@ -34,11 +34,11 @@ class ScoreBoard(QDockWidget):
         self.label_player2.setStyleSheet('')
         self.label_player2.setAlignment(Qt.AlignCenter | Qt.AlignVCenter)
 
-        self.p1_time_remaining = QLabel("Time remaining: ")
+        self.p1_time_remaining = QLabel("Time\nRemaining:\n300")
         self.p1_time_remaining.setAlignment(Qt.AlignCenter | Qt.AlignVCenter)
         self.p1_time_remaining.setStyleSheet('font-weight: bold; background: rgb(128, 179, 255)')
         
-        self.p2_time_remaining = QLabel("Time remaining: ")
+        self.p2_time_remaining = QLabel("Time\nRemaining:\n300")
         self.p2_time_remaining.setAlignment(Qt.AlignCenter | Qt.AlignVCenter)
         
         self.widget.setLayout(self.main_layout)
@@ -86,11 +86,11 @@ class ScoreBoard(QDockWidget):
         # updates the time remaining label to show the time remaining
         # Keep the changing value on a new line so as not to keep altering the width of the QDockWidget
         if self.player == 'Player1':
-            update = "Time Remaining:\n" + str(time_remaining)
+            update = "Time\nRemaining:\n" + str(time_remaining)
             self.p1_time_remaining.setText(update)
 
         elif self.player == 'Player2':
-            update = "Time Remaining:\n" + str(time_remaining)
+            update = "Time\nRemaining:\n" + str(time_remaining)
             self.p2_time_remaining.setText(update)
 
     @pyqtSlot(str)
