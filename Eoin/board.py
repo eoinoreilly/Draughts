@@ -5,7 +5,6 @@ from PyQt5.QtGui import QPainter, QColor
 from PyQt5.QtWidgets import QFrame, QLabel, QMessageBox
 from piece import Piece
 from player import Player
-from scoreBoard import ScoreBoard
 
 
 class Board(QFrame):
@@ -17,7 +16,8 @@ class Board(QFrame):
     boardWidth = 8
     boardHeight = 8
     timerSpeed = 1000  # the timer updates ever 1 second
-    counter = 10  # the number the counter will count down from
+    counter1 = 300  # the number the counter will count down from
+    counter2 = 300  #
 
     def __init__(self, parent):
         super().__init__(parent)
@@ -25,7 +25,8 @@ class Board(QFrame):
 
     def init_board(self):
         # initiates board
-        self.timer = QBasicTimer()
+        self.timer1 = QBasicTimer()
+        self.timer2 = QBasicTimer()
         self.isWaitingAfterLine = False
         self.setFocusPolicy(Qt.StrongFocus)
         self.isStarted = False
@@ -62,12 +63,23 @@ class Board(QFrame):
     def timerEvent(self, event):
         # this event is automatically called when the timer is updated. based on the timerSpeed variable
         # todo adapt this code to handle your timers
-        if event.timerId() == self.timer.timerId():  # if the timer that has 'ticked' is the one in this class
-            if Board.counter == 0:
-                print("Game over")
+        if event.timerId() == self.timer1.timerId():  # if the timer that has 'ticked' is the one in this class
+            if Board.counter1 == 0:
+                self.msg2StatusBar.emit("Player2, you win! Hit reset to start a new game.")
+                QMessageBox.about(self, "Winner", "Congratulations\nPlayer2 is the Winner")
+                self.timer1.stop()
 
-            Board.counter = Board.counter - 1
-            self.updateTimerSignal.emit(Board.counter)
+            Board.counter1 = Board.counter1 - 1
+            self.updateTimerSignal.emit(Board.counter1)
+            
+        elif event.timerId() == self.timer2.timerId():  # if the timer that has 'ticked' is the one in this class
+            if Board.counter2 == 0:
+                self.msg2StatusBar.emit("Player1, you win! Hit reset to start a new game.")
+                QMessageBox.about(self, "Winner", "Congratulations\nPlayer1 is the Winner")
+                self.timer2.stop()
+
+            Board.counter2 = Board.counter2 - 1
+            self.updateTimerSignal.emit(Board.counter2)
 
         else:
             super(Board, self).timerEvent(event)  # other wise pass it to the super class for handling
@@ -155,12 +167,16 @@ class Board(QFrame):
                 self.turn += 1
 
                 if self.currentPlayer.name == 'Player1':
+                    self.timer1.stop()
                     self.updateActivePlayer.emit('Player2')
                     self.msg2StatusBar.emit("Player2, it's your turn!")
+                    self.timer2.start(Board.timerSpeed, self)
 
                 else:
+                    self.timer2.stop()
                     self.updateActivePlayer.emit('Player1')
                     self.msg2StatusBar.emit("Player1, it's your turn!")
+                    self.timer1.start(Board.timerSpeed, self)
 
                 # Reset flag for next player
                 self.pieceSelected = False
@@ -245,8 +261,7 @@ class Board(QFrame):
         self.isWaitingAfterLine = False
         self.numLinesRemoved = 0
         self.msg2StatusBar.emit("{}, it's your turn!".format(self.currentPlayer.name))
-        self.timer.start(Board.timerSpeed, self)
-        print("start () - timer is started")
+        self.timer1.start(Board.timerSpeed, self)
 
     def pause(self):
         # pauses game
@@ -257,11 +272,17 @@ class Board(QFrame):
         self.isPaused = not self.isPaused
 
         if self.isPaused:
-            self.timer.stop()
+            self.timer1.stop()
+            self.timer2.stop()
             self.msg2StatusBar.emit("Paused on {}'s turn.".format(self.currentPlayer.name))
 
         else:
-            self.timer.start(Board.timerSpeed, self)
+            if self.currentPlayer.name == 'Player1':
+                self.timer1.start(Board.timerSpeed, self)
+                
+            elif self.currentPlayer.name == 'Player2':
+                self.timer2.start(Board.timerSpeed, self)
+            
             self.msg2StatusBar.emit("{}, it's your turn!".format(self.currentPlayer.name))
         self.update()
 
@@ -274,7 +295,6 @@ class Board(QFrame):
         Reset Game
         '''
         self.init_board()
-        # TODO:  Verify scores/counters are also reset
         self.update()
 
     def opponent_adjacent(self, player, current_square):
@@ -416,3 +436,4 @@ class Board(QFrame):
                 # self.move_list.add(Qpoint(col - 1, row + 1))
 
         # elif current_player == 2:
+
