@@ -2,12 +2,11 @@
 
 from PyQt5.QtWidgets import QDockWidget, QLabel, QWidget, QVBoxLayout, QMessageBox
 from PyQt5.QtCore import pyqtSlot, Qt, pyqtSignal
-from board import Board
 import sys
 
 
 class ScoreBoard(QDockWidget):
-    msg2StatusBar = pyqtSignal(str)
+    winnerSignal = pyqtSignal(str)
 
     def __init__(self):
         super().__init__()
@@ -71,15 +70,7 @@ class ScoreBoard(QDockWidget):
             self.label_player1.setText("Player1\n\nScore {}\n Remaining {}".format(self.p1_score, self.p1_pieces_remaining))
             self.label_player2.setText("Player2\n\nScore {}\n Remaining {}".format(self.p2_score, self.p2_pieces_remaining))
             if self.p2_pieces_remaining == 0:
-                self.msg2StatusBar.emit("Player1, you win!")
-                win_msg = QMessageBox()
-                win_msg.setIcon(QMessageBox.Information)
-                win_msg.setText("Winner")
-                win_msg.setInformativeText("Congratulations\nPlayer1 is the Winner")
-                win_msg.setWindowTitle("Winner")
-                win_msg.addButton(QMessageBox.Reset)
-                win_msg.buttonClicked.connect(msgbtn)
-                win_msg.exec_()
+                self.winnerSignal.emit("Player1")
 
         elif player == 'Player2':
             self.p2_score += 1
@@ -88,15 +79,7 @@ class ScoreBoard(QDockWidget):
             self.label_player1.setText("Player1\n\nScore {}\n Remaining {}".format(self.p1_score, self.p1_pieces_remaining))
             self.label_player2.setText("Player2\n\nScore {}\n Remaining {}".format(self.p2_score, self.p2_pieces_remaining))
             if self.p1_pieces_remaining == 0:
-                self.msg2StatusBar.emit("Player2, you win!")
-                win_msg = QMessageBox()
-                win_msg.setIcon(QMessageBox.Information)
-                win_msg.setText("Winner")
-                win_msg.setInformativeText("Congratulations\nPlayer2 is the Winner")
-                win_msg.setWindowTitle("Winner")
-                win_msg.addButton(QMessageBox.Reset)
-                win_msg.buttonClicked.connect(msgbtn)
-                win_msg.exec_()
+                self.winnerSignal.emit("Player2")
 
 
     @pyqtSlot(int)

@@ -43,6 +43,7 @@ class Draughts(QMainWindow):
         self.tboard.msg2StatusBar[str].connect(self.statusbar.showMessage)
         self.scoreBoard.make_connection(self.tboard)
         self.tboard.make_connection(self)
+        self.tboard.connection(self.scoreBoard)
 
         self.tboard.start()
 

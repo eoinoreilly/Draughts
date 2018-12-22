@@ -65,15 +65,7 @@ class Board(QFrame):
         # todo adapt this code to handle your timers
         if event.timerId() == self.timer1.timerId():  # if the timer that has 'ticked' is the one in this class
             if self.counter1 == 0:
-                self.msg2StatusBar.emit("Player2, you win!")
-                win_msg = QMessageBox()
-                win_msg.setIcon(QMessageBox.Information)
-                win_msg.setText("Winner")
-                win_msg.setInformativeText("Congratulations\nPlayer2 is the Winner")
-                win_msg.setWindowTitle("Winner")
-                win_msg.addButton(QMessageBox.Reset)
-                win_msg.buttonClicked.connect(self.reset)
-                win_msg.exec_()
+                self.win_state("Player2")
                 self.timer1.stop()
 
             self.counter1 = self.counter1 - 1
@@ -81,15 +73,7 @@ class Board(QFrame):
 
         elif event.timerId() == self.timer2.timerId():  # if the timer that has 'ticked' is the one in this class
             if self.counter2 == 0:
-                self.msg2StatusBar.emit("Player1, you win!")
-                win_msg = QMessageBox()
-                win_msg.setIcon(QMessageBox.Information)
-                win_msg.setText("Winner")
-                win_msg.setInformativeText("Congratulations\nPlayer1 is the Winner")
-                win_msg.setWindowTitle("Winner")
-                win_msg.addButton(QMessageBox.Reset)
-                win_msg.buttonClicked.connect(self.reset)
-                win_msg.exec_()
+                self.win_state("Player1")
                 self.timer2.stop()
 
             self.counter2 = self.counter2 - 1
@@ -450,4 +434,20 @@ class Board(QFrame):
                 # self.move_list.add(Qpoint(col - 1, row + 1))
 
         # elif current_player == 2:
+
+    def win_state(self, player):
+        self.msg2StatusBar.emit("{}, you win!".format(player))
+        win_msg = QMessageBox()
+        win_msg.setIcon(QMessageBox.Information)
+        win_msg.setInformativeText("Congratulations!\n{} is the Winner".format(player))
+        win_msg.setWindowTitle("Winner")
+        win_msg.addButton(QMessageBox.Reset)
+        win_msg.buttonClicked.connect(self.reset)
+        win_msg.exec_()
+
+
+    def connection(self, scoreBoard):
+        # this handles a signal sent from the scoreBoard class
+        # when the winnerSignal is emitted in scoreBoard the win_state slot receives it
+        scoreBoard.winnerSignal.connect(self.win_state)
 
