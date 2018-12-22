@@ -78,7 +78,7 @@ class Board(QFrame):
 
             self.counter1 = self.counter1 - 1
             self.updateTimerSignal.emit(self.counter1)
-            
+
         elif event.timerId() == self.timer2.timerId():  # if the timer that has 'ticked' is the one in this class
             if self.counter2 == 0:
                 self.msg2StatusBar.emit("Player1, you win!")
@@ -293,10 +293,10 @@ class Board(QFrame):
         else:
             if self.currentPlayer.name == 'Player1':
                 self.timer1.start(Board.timerSpeed, self)
-                
+
             elif self.currentPlayer.name == 'Player2':
                 self.timer2.start(Board.timerSpeed, self)
-            
+
             self.msg2StatusBar.emit("{}, it's your turn!".format(self.currentPlayer.name))
         self.update()
 

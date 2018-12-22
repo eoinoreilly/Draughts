@@ -1,12 +1,13 @@
 '''scoreBoard.py'''
 
 from PyQt5.QtWidgets import QDockWidget, QLabel, QWidget, QVBoxLayout, QMessageBox
-from PyQt5.QtCore import pyqtSlot, Qt
+from PyQt5.QtCore import pyqtSlot, Qt, pyqtSignal
 from board import Board
 import sys
 
 
 class ScoreBoard(QDockWidget):
+    msg2StatusBar = pyqtSignal(str)
 
     def __init__(self):
         super().__init__()
@@ -38,10 +39,10 @@ class ScoreBoard(QDockWidget):
         self.p1_time_remaining = QLabel("Time\nRemaining:\n300")
         self.p1_time_remaining.setAlignment(Qt.AlignCenter | Qt.AlignVCenter)
         self.p1_time_remaining.setStyleSheet('font-weight: bold; background: rgb(128, 179, 255)')
-        
+
         self.p2_time_remaining = QLabel("Time\nRemaining:\n300")
         self.p2_time_remaining.setAlignment(Qt.AlignCenter | Qt.AlignVCenter)
-        
+
         self.widget.setLayout(self.main_layout)
         self.main_layout.addWidget(self.label_player1)
         self.main_layout.addWidget(self.p1_time_remaining)
@@ -94,6 +95,7 @@ class ScoreBoard(QDockWidget):
                 win_msg.setInformativeText("Congratulations\nPlayer2 is the Winner")
                 win_msg.setWindowTitle("Winner")
                 win_msg.addButton(QMessageBox.Reset)
+                win_msg.buttonClicked.connect(msgbtn)
                 win_msg.exec_()
 
 
@@ -116,7 +118,7 @@ class ScoreBoard(QDockWidget):
         scoreBoard widget
         '''
         self.player = player
-        
+
         if self.player == 'Player1':
             self.label_player1.setStyleSheet('font-weight: bold; background: rgb(128, 179, 255)')
             self.p1_time_remaining.setStyleSheet('font-weight: bold; background: rgb(128, 179, 255)')
