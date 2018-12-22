@@ -17,8 +17,6 @@ class Board(QFrame):
     boardWidth = 8
     boardHeight = 8
     timerSpeed = 1000  # the timer updates ever 1 second
-    counter1 = 300  # the number the counter will count down from
-    counter2 = 300  #
 
     def __init__(self, parent):
         super().__init__(parent)
@@ -28,6 +26,8 @@ class Board(QFrame):
         # initiates board
         self.timer1 = QBasicTimer()
         self.timer2 = QBasicTimer()
+        self.counter1 = 300  # the number the counter will count down from
+        self.counter2 = 300
         self.isWaitingAfterLine = False
         self.setFocusPolicy(Qt.StrongFocus)
         self.isStarted = False
@@ -64,22 +64,36 @@ class Board(QFrame):
         # this event is automatically called when the timer is updated. based on the timerSpeed variable
         # todo adapt this code to handle your timers
         if event.timerId() == self.timer1.timerId():  # if the timer that has 'ticked' is the one in this class
-            if Board.counter1 == 0:
-                self.msg2StatusBar.emit("Player2, you win! Hit reset to start a new game.")
-                QMessageBox.about(self, "Winner", "Congratulations\nPlayer2 is the Winner")
+            if self.counter1 == 0:
+                self.msg2StatusBar.emit("Player2, you win!")
+                win_msg = QMessageBox()
+                win_msg.setIcon(QMessageBox.Information)
+                win_msg.setText("Winner")
+                win_msg.setInformativeText("Congratulations\nPlayer2 is the Winner")
+                win_msg.setWindowTitle("Winner")
+                win_msg.addButton(QMessageBox.Reset)
+                win_msg.buttonClicked.connect(self.reset)
+                win_msg.exec_()
                 self.timer1.stop()
 
-            Board.counter1 = Board.counter1 - 1
-            self.updateTimerSignal.emit(Board.counter1)
+            self.counter1 = self.counter1 - 1
+            self.updateTimerSignal.emit(self.counter1)
             
         elif event.timerId() == self.timer2.timerId():  # if the timer that has 'ticked' is the one in this class
-            if Board.counter2 == 0:
-                self.msg2StatusBar.emit("Player1, you win! Hit reset to start a new game.")
-                QMessageBox.about(self, "Winner", "Congratulations\nPlayer1 is the Winner")
+            if self.counter2 == 0:
+                self.msg2StatusBar.emit("Player1, you win!")
+                win_msg = QMessageBox()
+                win_msg.setIcon(QMessageBox.Information)
+                win_msg.setText("Winner")
+                win_msg.setInformativeText("Congratulations\nPlayer1 is the Winner")
+                win_msg.setWindowTitle("Winner")
+                win_msg.addButton(QMessageBox.Reset)
+                win_msg.buttonClicked.connect(self.reset)
+                win_msg.exec_()
                 self.timer2.stop()
 
-            Board.counter2 = Board.counter2 - 1
-            self.updateTimerSignal.emit(Board.counter2)
+            self.counter2 = self.counter2 - 1
+            self.updateTimerSignal.emit(self.counter2)
 
         else:
             super(Board, self).timerEvent(event)  # other wise pass it to the super class for handling
