@@ -11,7 +11,6 @@ from scoreBoard import ScoreBoard
 class Board(QFrame):
     msg2StatusBar = pyqtSignal(str)
     updateTimerSignal = pyqtSignal(int) # signal sent when timer is updated
-    clickLocationSignal = pyqtSignal(str) # signal sent when there is a new click location
     updateActivePlayer = pyqtSignal(str)  # signal sent when there is a new active player
     updateScore = pyqtSignal(str)
 
@@ -33,6 +32,7 @@ class Board(QFrame):
         self.isPaused = False
         self.clicks = 0
         self.selectedPiece, self.fromRow, self.fromCol = 0, 0, 0
+        self.currentSquare = ()
         self.selectedSquare = ()
         self.pieceCaptured = False
         self.currentPlayer = Player.Player1 # Defaut Start
@@ -78,7 +78,7 @@ class Board(QFrame):
         and captures are all part of the mousePressEvent.
         '''
         row, col = self.mouse_pos_to_col_row(event)
-        currentSquare = (row, col)
+        self.currentSquare = (row, col)
 
         # Set expected player and expected player piece
         if self.player_turn() == 0:  # We start with Player 1
@@ -112,7 +112,7 @@ class Board(QFrame):
             self.pieceSelected = True
 
         # Allow player to deselect a square
-        elif self.pieceSelected and (self.selectedSquare == currentSquare):
+        elif self.pieceSelected and (self.selectedSquare == self.currentSquare):
             self.boardArray[row][col] = self.selectedPiece
             self.pieceSelected = False
             self.clicks = 0
@@ -123,8 +123,8 @@ class Board(QFrame):
             self.clicks += 1
 
             # We check here if it's a valid move, do not proceed if not.
-            # is_valid_move function provides error message to Player.
-            if self.is_valid_move(self.selectedSquare, currentSquare, self.currentPlayer):
+            #
+            if self.is_valid_move(self.selectedSquare, self.currentSquare, self.currentPlayer):
                 # We move the selected peice to the target row/col in the array
                 # and mark the source square as empty (0)
                 self.boardArray[row][col] = self.selectedPiece
@@ -164,6 +164,8 @@ class Board(QFrame):
 
                 # Reset flag for next player
                 self.pieceSelected = False
+            else:
+                QMessageBox.about(self, "Error", "{} invalid move".format(self.currentPlayer.name))
         # Update the board
         self.update()
 
@@ -342,7 +344,7 @@ class Board(QFrame):
                     return True
 
             else:
-                return QMessageBox.about(self, "Error", "{} invalid move".format(player.name))
+                return False
 
         if player.name == 'Player2':
             # If there's no adjacent opponent, valid move is 1 diagonal forward
@@ -369,7 +371,7 @@ class Board(QFrame):
                     return True
 
             else:
-                return QMessageBox.about(self, "Error", "{} invalid move".format(player.name))
+                return False
 
         return False
 
