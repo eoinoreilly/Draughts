@@ -25,7 +25,7 @@ class ScoreBoard(QDockWidget):
         self.widget.setMinimumSize(150,150) # Set minimum width to prevent text overflow
         self.main_layout = QVBoxLayout()
 
-        # Update score widget with Player Specific scoreing details
+        # Update score widget with Player Specific scoring details
         self.label_player1 = QLabel("Player1\n\nScore {}\n Remaining {}".format(self.p1_score, self.p1_pieces_remaining))
         self.label_player1.setStyleSheet('')
         self.label_player1.setAlignment(Qt.AlignCenter | Qt.AlignVCenter)

@@ -262,7 +262,7 @@ class Board(QFrame):
         self.timer1.start(Board.timerSpeed, self)
 
     def pause(self):
-        # pauses game
+        # pauses and resumes game
 
         if not self.isStarted:
             return
@@ -400,42 +400,10 @@ class Board(QFrame):
         else:
             return self.boardArray[row][col]
 
-        # if event.button() == Qt.LeftButton:
-
-        '''
-        returns a QPoint with a tuple (x, y) col, row
-
-        call a "game logic" function to determine:
-
-        if 1st click:  #select piece
-            if isEmpty or opponent piece:
-                break
-            selectPiece()
-            highlightMoveOptions() #show permitted spaces to move to
-                if noOptions:
-                    break
-        if 2nd click: # select square to put piece selected in 1st click
-            if isNotEmpty:
-                break
-            movePiece()
-            removeCapturedPiece()
-            if pieceRemoved():
-                removeCapturedPiece()
-                updateScoreBoard()
-                didIWin()
-        '''
-
-    # def possible_moves(col, row):
-        # if current_player == 1:
-            # if get_pieces(col + 1, row + 1) == 0:
-                # self.move_list.add(Qpoint(col + 1, row + 1))
-
-            # if get_pieces(col - 1, row + 1) == 0:
-                # self.move_list.add(Qpoint(col - 1, row + 1))
-
-        # elif current_player == 2:
-
     def win_state(self, player):
+        # Produces a message that pops up when a player enters a win state
+        # A win sate is entered when all a player's pieces are captured or a player's timer reaches zero
+        # The message has a reset button that will start a new game
         self.msg2StatusBar.emit("{}, you win!".format(player))
         win_msg = QMessageBox()
         win_msg.setIcon(QMessageBox.Information)
